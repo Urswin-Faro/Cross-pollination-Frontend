@@ -108,13 +108,41 @@ export default function Connect() {
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!messageText.trim() || !currentRoom) return;
     
-    socketRef.current?.emit('send_message', { roomId: currentRoom, message: messageText, senderName: "Me" });
+    // 1. Debugging: Log what's happening in the console (F12)
+    console.log("Attempting to send...");
+    console.log("Current Room:", currentRoom);
+    console.log("Message Text:", messageText);
+    console.log("Socket Connected:", socketRef.current?.connected);
+
+    // 2. Validate
+    if (!messageText.trim()) {
+      console.warn("Message is empty");
+      return;
+    }
+    
+    if (!currentRoom) {
+      console.error("Cannot send message: No active room (Are you connected?)");
+      alert("Please wait for a match before sending messages.");
+      return;
+    }
+
+    if (!socketRef.current) {
+      console.error("Cannot send message: Socket not initialized");
+      return;
+    }
+
+    // 3. Send
+    socketRef.current.emit('send_message', { 
+      roomId: currentRoom, 
+      message: messageText, 
+      senderName: "Me" 
+    });
+
+    // 4. Update UI
     setChatLog(prev => [...prev, { text: messageText, sender: 'Me', isMe: true }]);
     setMessageText('');
   };
-
   return (
     <div className="h-screen w-full flex flex-col bg-[#030712] overflow-hidden">
       
