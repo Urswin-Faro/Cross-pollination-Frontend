@@ -94,8 +94,17 @@ export default function Connect() {
   };
 
   const startSearch = () => {
+    // 1. Check if socket is actually connected
+    if (!socketRef.current || !socketRef.current.connected) {
+      console.error("Socket not connected! Attempting to reconnect...");
+      socketRef.current?.connect(); // Force a connection attempt
+      alert("Socket not connected. Please wait a second and try again.");
+      return;
+    }
+
     setStatus('searching');
-    socketRef.current?.emit('join_pool', { userProfile: { name: "User" } });
+    console.log("Sending join_pool event...");
+    socketRef.current.emit('join_pool', { userProfile: { name: "User" } });
   };
 
   const handleSkip = () => {
