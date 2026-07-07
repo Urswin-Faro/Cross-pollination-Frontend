@@ -160,17 +160,39 @@ export default function Connect() {
       </div>
 
       {/* CHAT FOOTER */}
-      <div className="h-24 bg-[#0B0F19] border-t border-slate-900/50 flex flex-col px-4 py-2 justify-center shrink-0">
-        <div className="flex-1 mb-1 overflow-y-auto">
-          {chatLog.map((msg, idx) => (
-            <div key={idx} className="text-xs text-slate-300"><span className="font-bold text-cyan-400">{msg.sender}:</span> {msg.text}</div>
-          ))}
-        </div>
-        <form onSubmit={handleSendMessage} className="flex h-8 gap-2">
-          <input value={messageText} onChange={(e) => setMessageText(e.target.value)} className="flex-1 bg-[#030712] border border-slate-800 rounded px-3 text-xs text-slate-200 outline-none" placeholder="Send info..." />
-          <button type="submit" className="px-4 text-xs font-bold text-white rounded bg-slate-800">SEND</button>
-        </form>
+<div className="h-24 bg-[#0B0F19] border-t border-slate-900/50 flex flex-col px-4 py-2 justify-center shrink-0">
+  <div className="flex-1 mb-1 overflow-y-auto">
+    {chatLog.map((msg, idx) => (
+      <div key={idx} className="text-xs text-slate-300">
+        <span className="font-bold text-cyan-400">{msg.sender}:</span> {msg.text}
       </div>
+    ))}
+  </div>
+  
+  {/* The key is the form onSubmit handler */}
+  <form 
+    onSubmit={(e) => {
+      e.preventDefault(); // Stop page refresh
+      handleSendMessage(e);
+    }} 
+    className="flex items-center h-10 gap-2" // Increased height slightly for better touch target
+  >
+    <input 
+      type="text"
+      value={messageText} 
+      onChange={(e) => setMessageText(e.target.value)} 
+      className="flex-1 bg-[#030712] border border-slate-800 rounded px-3 h-full text-xs text-slate-200 outline-none" 
+      placeholder="Send info..." 
+    />
+    {/* Ensure type="submit" is present */}
+    <button 
+      type="submit" 
+      className="h-full px-6 text-xs font-bold text-white transition-colors rounded bg-slate-800 active:bg-slate-700"
+    >
+      SEND
+    </button>
+  </form>
+</div>
     </div>
   );
 }
