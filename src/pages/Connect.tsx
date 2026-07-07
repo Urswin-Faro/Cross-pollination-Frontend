@@ -173,11 +173,14 @@ export default function Connect() {
             placeholder="Send info..." 
           />
           <button 
-            type="submit" 
-            className="h-full px-6 text-xs font-bold text-white transition-colors rounded bg-slate-800 active:bg-slate-700"
-          >
-            SEND
-          </button>
+  type="submit" 
+  className="h-full px-6 text-xs font-bold text-white transition-colors rounded cursor-pointer bg-slate-800 active:bg-slate-700"
+  // Add these two event handlers to force-trigger the click
+  onMouseDown={(e) => { e.preventDefault(); handleSendMessage(e as any); }}
+  onTouchStart={(e) => { e.preventDefault(); handleSendMessage(e as any); }}
+>
+  SEND
+</button>
         </form>
       </div>
     </div>
