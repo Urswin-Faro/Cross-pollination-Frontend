@@ -24,20 +24,21 @@ export default function Connect() {
     const BACKEND_URL = 'https://cross-pollination-backend.onrender.com';
     socketRef.current = io(BACKEND_URL);
 
-    socketRef.current.on('matched', async ({ roomId, peer }) => {
+    // UPDATED: Matched listener with initiator flag
+    socketRef.current.on('matched', async ({ roomId, peer, initiator }) => {
       setStatus('connected');
       setCurrentRoom(roomId);
       setChatLog([{ text: `Connected with ${peer.name}`, sender: 'System', isMe: false }]);
-      setupWebRTC(roomId, true);
+      await setupWebRTC(roomId, initiator);
     });
 
     socketRef.current.on('video_offer', async ({ roomId, sdp }) => {
       setCurrentRoom(roomId);
-      setupWebRTC(roomId, false);
+      await setupWebRTC(roomId, false);
       await pcRef.current?.setRemoteDescription(new RTCSessionDescription(sdp));
       const answer = await pcRef.current?.createAnswer();
       await pcRef.current?.setLocalDescription(answer!);
-      socketRef.current?.emit('video_answer', { roomId, sdp: answer });
+      socketRef.current?.emit('video_answer', { roomId, sdp: pcRef.current!.localDescription });
     });
 
     socketRef.current.on('video_answer', async ({ sdp }) => {
@@ -55,7 +56,7 @@ export default function Connect() {
     });
 
     socketRef.current.on('peer_left', () => {
-      handleSkip(); // Reset if other person leaves
+      handleSkip(); 
     });
 
     return () => { socketRef.current?.disconnect(); };
@@ -70,14 +71,24 @@ export default function Connect() {
       }).catch(err => console.error("Camera Error:", err));
   }, []);
 
-  // 3. WebRTC Setup Logic
-  const setupWebRTC = (roomId: string, isCaller: boolean) => {
+  // 3-8. UPDATED: WebRTC Setup Logic
+  const setupWebRTC = async (roomId: string, isCaller: boolean) => {
+    if (pcRef.current) {
+      pcRef.current.close();
+    }
+
     const pc = new RTCPeerConnection(peerConfiguration);
     pcRef.current = pc;
+
+    // Debugging
+    pc.onconnectionstatechange = () => console.log("Connection:", pc.connectionState);
+    pc.oniceconnectionstatechange = () => console.log("ICE:", pc.iceConnectionState);
+    pc.onsignalingstatechange = () => console.log("Signaling:", pc.signalingState);
 
     localStreamRef.current?.getTracks().forEach(track => pc.addTrack(track, localStreamRef.current!));
 
     pc.ontrack = (event) => {
+      console.log("🎥 Remote stream received");
       if (remoteVideoRef.current) remoteVideoRef.current.srcObject = event.streams[0];
     };
 
@@ -86,30 +97,26 @@ export default function Connect() {
     };
 
     if (isCaller) {
-      pc.createOffer().then(offer => {
-        pc.setLocalDescription(offer);
-        socketRef.current?.emit('video_offer', { roomId, sdp: offer });
-      });
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+      socketRef.current?.emit('video_offer', { roomId, sdp: pc.localDescription });
     }
   };
 
   const startSearch = () => {
-    // 1. Check if socket is actually connected
     if (!socketRef.current || !socketRef.current.connected) {
-      console.error("Socket not connected! Attempting to reconnect...");
-      socketRef.current?.connect(); // Force a connection attempt
-      alert("Socket not connected. Please wait a second and try again.");
+      socketRef.current?.connect();
       return;
     }
-
     setStatus('searching');
-    console.log("Sending join_pool event...");
     socketRef.current.emit('join_pool', { userProfile: { name: "User" } });
   };
 
   const handleSkip = () => {
     if (pcRef.current) { pcRef.current.close(); pcRef.current = null; }
-    socketRef.current?.emit('leave_room', { roomId: currentRoom });
+    if (currentRoom) {
+      socketRef.current?.emit('leave_room', { roomId: currentRoom });
+    }
     setCurrentRoom(null);
     setChatLog([]);
     startSearch();
@@ -117,44 +124,15 @@ export default function Connect() {
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // 1. Debugging: Log what's happening in the console (F12)
-    console.log("Attempting to send...");
-    console.log("Current Room:", currentRoom);
-    console.log("Message Text:", messageText);
-    console.log("Socket Connected:", socketRef.current?.connected);
-
-    // 2. Validate
-    if (!messageText.trim()) {
-      console.warn("Message is empty");
-      return;
-    }
-    
-    if (!currentRoom) {
-      console.error("Cannot send message: No active room (Are you connected?)");
-      alert("Please wait for a match before sending messages.");
-      return;
-    }
-
-    if (!socketRef.current) {
-      console.error("Cannot send message: Socket not initialized");
-      return;
-    }
-
-    // 3. Send
-    socketRef.current.emit('send_message', { 
-      roomId: currentRoom, 
-      message: messageText, 
-      senderName: "Me" 
-    });
-
-    // 4. Update UI
+    if (!messageText.trim() || !currentRoom) return;
+    socketRef.current?.emit('send_message', { roomId: currentRoom, message: messageText, senderName: "Me" });
     setChatLog(prev => [...prev, { text: messageText, sender: 'Me', isMe: true }]);
     setMessageText('');
   };
+
   return (
+    // ... (keep your existing JSX unchanged)
     <div className="h-screen w-full flex flex-col bg-[#030712] overflow-hidden">
-      
       {/* VIDEO SECTION */}
       <div className="flex flex-col flex-1 min-h-0 gap-2 p-2 md:flex-row">
         <div className="relative flex-1 overflow-hidden border rounded-lg bg-slate-900 border-slate-900/50">

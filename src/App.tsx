@@ -1,11 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MainLayout } from './layout/MainLayout';
 import { Landing } from './pages/Landing';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
 import { SetupProfile } from './pages/SetupProfile';
 
-/* 👇 REMOVED THE CURLY BRACES HERE 👇 */
 import Homepage from './pages/Homepage';
 import Discover from './pages/Discover';
 import Connect from './pages/Connect';
@@ -13,9 +12,53 @@ import Events from './pages/Events';
 import Profile from './pages/Profile';
 
 function App() {
-  // Global view context manager. Options: 'landing' | 'login' | 'register' | 'setup' | 'app'
-  const [currentScreen, setCurrentScreen] = useState('landing');
+  // Check if the user is already logged in
+  const [currentScreen, setCurrentScreen] = useState(() => {
+    return localStorage.getItem('token') ? 'app' : 'landing';
+  });
+
   const [activeTab, setActiveTab] = useState('home');
+
+  // Auto logout after inactivity
+  useEffect(() => {
+    if (currentScreen !== 'app') return;
+
+    const TIMEOUT = 30 * 60 * 1000; // 30 minutes
+    let timer: ReturnType<typeof setTimeout>;
+
+    const logout = () => {
+      localStorage.removeItem('token');
+      localStorage.removeItem('userId');
+      setCurrentScreen('landing');
+    };
+
+    const resetTimer = () => {
+      clearTimeout(timer);
+      timer = setTimeout(logout, TIMEOUT);
+    };
+
+    const events = [
+      'mousemove',
+      'mousedown',
+      'keydown',
+      'scroll',
+      'touchstart',
+      'click',
+    ];
+
+    events.forEach((event) =>
+      window.addEventListener(event, resetTimer)
+    );
+
+    resetTimer();
+
+    return () => {
+      clearTimeout(timer);
+      events.forEach((event) =>
+        window.removeEventListener(event, resetTimer)
+      );
+    };
+  }, [currentScreen]);
 
   // App Interior Core Dashboard Router Content
   const renderAppTabContent = () => {
@@ -35,22 +78,30 @@ function App() {
     }
   };
 
-  // Primary Workspace Global Screen Switcher router
+  // Primary Workspace Global Screen Switcher
   switch (currentScreen) {
     case 'landing':
       return <Landing onNavigate={setCurrentScreen} />;
+
     case 'login':
       return <Login onNavigate={setCurrentScreen} />;
+
     case 'register':
       return <Register onNavigate={setCurrentScreen} />;
+
     case 'setup':
       return <SetupProfile onNavigate={setCurrentScreen} />;
+
     case 'app':
       return (
-        <MainLayout activeTab={activeTab} setActiveTab={setActiveTab}>
+        <MainLayout
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+        >
           {renderAppTabContent()}
         </MainLayout>
       );
+
     default:
       return <Landing onNavigate={setCurrentScreen} />;
   }
