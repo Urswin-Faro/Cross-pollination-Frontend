@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { io, Socket } from 'socket.io-client';
-import { Mic, MicOff, SkipForward, Send } from 'lucide-react';
+import { Mic, MicOff, SkipForward } from 'lucide-react';
 
 const peerConfiguration = {
   iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
@@ -19,12 +19,10 @@ export default function Connect() {
   const pcRef = useRef<RTCPeerConnection | null>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
 
-  // 1. Initialize Socket and Listeners
   useEffect(() => {
     const BACKEND_URL = 'https://cross-pollination-backend.onrender.com';
     socketRef.current = io(BACKEND_URL);
 
-    // UPDATED: Matched listener with initiator flag
     socketRef.current.on('matched', async ({ roomId, peer, initiator }) => {
       setStatus('connected');
       setCurrentRoom(roomId);
@@ -62,7 +60,6 @@ export default function Connect() {
     return () => { socketRef.current?.disconnect(); };
   }, []);
 
-  // 2. Camera Setup
   useEffect(() => {
     navigator.mediaDevices.getUserMedia({ video: true, audio: true })
       .then(stream => {
@@ -71,19 +68,15 @@ export default function Connect() {
       }).catch(err => console.error("Camera Error:", err));
   }, []);
 
-  // 3-8. UPDATED: WebRTC Setup Logic
   const setupWebRTC = async (roomId: string, isCaller: boolean) => {
-    if (pcRef.current) {
-      pcRef.current.close();
-    }
+    if (pcRef.current) pcRef.current.close();
 
     const pc = new RTCPeerConnection(peerConfiguration);
     pcRef.current = pc;
 
-    // Debugging
-    pc.onconnectionstatechange = () => console.log("Connection:", pc.connectionState);
-    pc.oniceconnectionstatechange = () => console.log("ICE:", pc.iceConnectionState);
-    pc.onsignalingstatechange = () => console.log("Signaling:", pc.signalingState);
+    // Mobile-critical: Explicitly open transceiver for incoming streams
+    pc.addTransceiver('video', { direction: 'recvonly' });
+    pc.addTransceiver('audio', { direction: 'recvonly' });
 
     localStreamRef.current?.getTracks().forEach(track => pc.addTrack(track, localStreamRef.current!));
 
@@ -131,8 +124,7 @@ export default function Connect() {
   };
 
   return (
-    // ... (keep your existing JSX unchanged)
-    <div className="h-screen w-full flex flex-col bg-[#030712] overflow-hidden">
+    <div className="h-[100dvh] w-full flex flex-col bg-[#030712] overflow-hidden">
       {/* VIDEO SECTION */}
       <div className="flex flex-col flex-1 min-h-0 gap-2 p-2 md:flex-row">
         <div className="relative flex-1 overflow-hidden border rounded-lg bg-slate-900 border-slate-900/50">
@@ -160,39 +152,34 @@ export default function Connect() {
       </div>
 
       {/* CHAT FOOTER */}
-<div className="h-24 bg-[#0B0F19] border-t border-slate-900/50 flex flex-col px-4 py-2 justify-center shrink-0">
-  <div className="flex-1 mb-1 overflow-y-auto">
-    {chatLog.map((msg, idx) => (
-      <div key={idx} className="text-xs text-slate-300">
-        <span className="font-bold text-cyan-400">{msg.sender}:</span> {msg.text}
+      <div className="h-28 md:h-32 bg-[#0B0F19] border-t border-slate-900/50 flex flex-col px-4 py-2 shrink-0">
+        <div className="flex-1 mb-2 overflow-y-auto">
+          {chatLog.map((msg, idx) => (
+            <div key={idx} className="text-xs text-slate-300 py-0.5">
+              <span className="font-bold text-cyan-400">{msg.sender}:</span> {msg.text}
+            </div>
+          ))}
+        </div>
+        
+        <form 
+          onSubmit={(e) => { e.preventDefault(); handleSendMessage(e); }} 
+          className="flex items-center h-10 gap-2 shrink-0"
+        >
+          <input 
+            type="text"
+            value={messageText} 
+            onChange={(e) => setMessageText(e.target.value)} 
+            className="flex-1 bg-[#030712] border border-slate-800 rounded px-3 h-full text-xs text-slate-200 outline-none" 
+            placeholder="Send info..." 
+          />
+          <button 
+            type="submit" 
+            className="h-full px-6 text-xs font-bold text-white transition-colors rounded bg-slate-800 active:bg-slate-700"
+          >
+            SEND
+          </button>
+        </form>
       </div>
-    ))}
-  </div>
-  
-  {/* The key is the form onSubmit handler */}
-  <form 
-    onSubmit={(e) => {
-      e.preventDefault(); // Stop page refresh
-      handleSendMessage(e);
-    }} 
-    className="flex items-center h-10 gap-2" // Increased height slightly for better touch target
-  >
-    <input 
-      type="text"
-      value={messageText} 
-      onChange={(e) => setMessageText(e.target.value)} 
-      className="flex-1 bg-[#030712] border border-slate-800 rounded px-3 h-full text-xs text-slate-200 outline-none" 
-      placeholder="Send info..." 
-    />
-    {/* Ensure type="submit" is present */}
-    <button 
-      type="submit" 
-      className="h-full px-6 text-xs font-bold text-white transition-colors rounded bg-slate-800 active:bg-slate-700"
-    >
-      SEND
-    </button>
-  </form>
-</div>
     </div>
   );
 }
