@@ -121,6 +121,10 @@ export default function Connect() {
     socketRef.current?.emit('send_message', { roomId: currentRoom, message: messageText, senderName: "Me" });
     setChatLog(prev => [...prev, { text: messageText, sender: 'Me', isMe: true }]);
     setMessageText('');
+    console.log("Sending message");
+console.log("Room:", currentRoom);
+console.log("Socket ID:", socketRef.current?.id);
+console.log("Message:", messageText);
   };
 
   return (
@@ -172,12 +176,9 @@ export default function Connect() {
             className="flex-1 bg-[#030712] border border-slate-800 rounded px-3 h-full text-xs text-slate-200 outline-none" 
             placeholder="Send info..." 
           />
-          <button 
-  type="submit" 
-  className="h-full px-6 text-xs font-bold text-white transition-colors rounded cursor-pointer bg-slate-800 active:bg-slate-700"
-  // Add these two event handlers to force-trigger the click
-  onMouseDown={(e) => { e.preventDefault(); handleSendMessage(e as any); }}
-  onTouchStart={(e) => { e.preventDefault(); handleSendMessage(e as any); }}
+          <button
+  type="submit"
+  className="h-full px-6 text-xs font-bold text-white rounded bg-slate-800"
 >
   SEND
 </button>
