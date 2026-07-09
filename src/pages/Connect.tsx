@@ -12,6 +12,7 @@ export default function Connect() {
   const [chatLog, setChatLog] = useState<{ text: string; sender: string; isMe: boolean }[]>([]);
   const [messageText, setMessageText] = useState('');
   const [isMuted, setIsMuted] = useState(false);
+  const currentRoomRef = useRef<string | null>(null);
 
   const localVideoRef = useRef<HTMLVideoElement | null>(null);
   const remoteVideoRef = useRef<HTMLVideoElement | null>(null);
@@ -25,19 +26,30 @@ export default function Connect() {
 
     socketRef.current.on('matched', async ({ roomId, peer, initiator }) => {
       setStatus('connected');
-      setCurrentRoom(roomId);
+      currentRoomRef.current = roomId;
+setCurrentRoom(roomId);
       setChatLog([{ text: `Connected with ${peer.name}`, sender: 'System', isMe: false }]);
       await setupWebRTC(roomId, initiator);
     });
 
     socketRef.current.on('video_offer', async ({ roomId, sdp }) => {
-      setCurrentRoom(roomId);
-      await setupWebRTC(roomId, false);
-      await pcRef.current?.setRemoteDescription(new RTCSessionDescription(sdp));
-      const answer = await pcRef.current?.createAnswer();
-      await pcRef.current?.setLocalDescription(answer!);
-      socketRef.current?.emit('video_answer', { roomId, sdp: pcRef.current!.localDescription });
-    });
+  currentRoomRef.current = roomId;
+  setCurrentRoom(roomId);
+
+  await setupWebRTC(roomId, false);
+
+  await pcRef.current?.setRemoteDescription(
+    new RTCSessionDescription(sdp)
+  );
+
+  const answer = await pcRef.current?.createAnswer();
+  await pcRef.current?.setLocalDescription(answer!);
+
+  socketRef.current?.emit('video_answer', {
+    roomId,
+    sdp: pcRef.current!.localDescription
+  });
+});
 
     socketRef.current.on('video_answer', async ({ sdp }) => {
       await pcRef.current?.setRemoteDescription(new RTCSessionDescription(sdp));
@@ -107,49 +119,52 @@ export default function Connect() {
 
   const handleSkip = () => {
     if (pcRef.current) { pcRef.current.close(); pcRef.current = null; }
-    if (currentRoom) {
-      socketRef.current?.emit('leave_room', { roomId: currentRoom });
-    }
+    if (currentRoomRef.current) {
+  socketRef.current?.emit("leave_room", {
+    roomId: currentRoomRef.current
+  });
+}
+    currentRoomRef.current = null;
     setCurrentRoom(null);
     setChatLog([]);
     startSearch();
   };
 
   const handleSendMessage = (e: React.FormEvent) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  console.log("=== handleSendMessage ===");
-  console.log("Message:", `"${messageText}"`);
-  console.log("Room:", currentRoom);
+    console.log("=== handleSendMessage ===");
 
-  if (!messageText.trim()) {
-    console.log("❌ Message is empty");
-    return;
-  }
-
-  if (!currentRoom) {
-    console.log("❌ currentRoom is null");
-    return;
-  }
-
-  console.log("✅ Sending");
-
-  socketRef.current?.emit("send_message", {
-    roomId: currentRoom,
-    message: messageText,
-    senderName: "Me"
-  });
-
-  setChatLog(prev => [
-    ...prev,
-    {
-      text: messageText,
-      sender: "Me",
-      isMe: true
+    if (!messageText.trim()) {
+        console.log("❌ Message is empty");
+        return;
     }
-  ]);
 
-  setMessageText("");
+    const roomId = currentRoomRef.current;
+
+    if (!roomId) {
+        console.log("❌ currentRoomRef is null");
+        return;
+    }
+
+    console.log("✅ Sending to room:", roomId);
+
+    socketRef.current?.emit("send_message", {
+        roomId,
+        message: messageText,
+        senderName: "Me"
+    });
+
+    setChatLog(prev => [
+        ...prev,
+        {
+            text: messageText,
+            sender: "Me",
+            isMe: true
+        }
+    ]);
+
+    setMessageText("");
 };
 
   return (
@@ -210,5 +225,4 @@ export default function Connect() {
         </form>
       </div>
     </div>
-  );
-}
+  );}
