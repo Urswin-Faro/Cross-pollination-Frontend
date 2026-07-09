@@ -179,6 +179,7 @@ console.log("Message:", messageText);
           <button
   type="submit"
   className="h-full px-6 text-xs font-bold text-white rounded bg-slate-800"
+  onClick={() => console.log("🔥 Button clicked")}
 >
   SEND
 </button>
