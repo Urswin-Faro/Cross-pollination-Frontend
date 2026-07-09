@@ -116,16 +116,41 @@ export default function Connect() {
   };
 
   const handleSendMessage = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!messageText.trim() || !currentRoom) return;
-    socketRef.current?.emit('send_message', { roomId: currentRoom, message: messageText, senderName: "Me" });
-    setChatLog(prev => [...prev, { text: messageText, sender: 'Me', isMe: true }]);
-    setMessageText('');
-    console.log("Sending message");
-console.log("Room:", currentRoom);
-console.log("Socket ID:", socketRef.current?.id);
-console.log("Message:", messageText);
-  };
+  e.preventDefault();
+
+  console.log("=== handleSendMessage ===");
+  console.log("Message:", `"${messageText}"`);
+  console.log("Room:", currentRoom);
+
+  if (!messageText.trim()) {
+    console.log("❌ Message is empty");
+    return;
+  }
+
+  if (!currentRoom) {
+    console.log("❌ currentRoom is null");
+    return;
+  }
+
+  console.log("✅ Sending");
+
+  socketRef.current?.emit("send_message", {
+    roomId: currentRoom,
+    message: messageText,
+    senderName: "Me"
+  });
+
+  setChatLog(prev => [
+    ...prev,
+    {
+      text: messageText,
+      sender: "Me",
+      isMe: true
+    }
+  ]);
+
+  setMessageText("");
+};
 
   return (
     <div className="h-[100dvh] w-full flex flex-col bg-[#030712] overflow-hidden">
@@ -165,8 +190,7 @@ console.log("Message:", messageText);
           ))}
         </div>
         
-        <form 
-          onSubmit={(e) => { e.preventDefault(); handleSendMessage(e); }} 
+        <form onSubmit={handleSendMessage}
           className="flex items-center h-10 gap-2 shrink-0"
         >
           <input 
