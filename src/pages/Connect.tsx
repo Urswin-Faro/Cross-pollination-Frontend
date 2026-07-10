@@ -32,34 +32,59 @@ setCurrentRoom(roomId);
       await setupWebRTC(roomId, initiator);
     });
 
-    socketRef.current.on('video_offer', async ({ roomId, sdp }) => {
-  currentRoomRef.current = roomId;
-  setCurrentRoom(roomId);
+    socketRef.current.on("video_offer", async ({ roomId, sdp }) => {
+    console.log("📥 Received offer");
 
-  await setupWebRTC(roomId, false);
+    currentRoomRef.current = roomId;
+    setCurrentRoom(roomId);
 
-  await pcRef.current?.setRemoteDescription(
+    await setupWebRTC(roomId, false);
+
+    console.log("Setting remote description...");
+
+    await pcRef.current!.setRemoteDescription(
+        new RTCSessionDescription(sdp)
+    );
+
+    console.log("Creating answer...");
+
+    const answer = await pcRef.current!.createAnswer();
+
+    await pcRef.current!.setLocalDescription(answer);
+
+    console.log("Sending answer...");
+
+    socketRef.current?.emit("video_answer", {
+        roomId,
+        sdp: pcRef.current!.localDescription
+    });
+});
+
+    socketRef.current.on("video_answer", async ({ roomId, sdp }) => {
+  console.log("📥 Received answer");
+
+  if (!pcRef.current) return;
+
+  await pcRef.current.setRemoteDescription(
     new RTCSessionDescription(sdp)
   );
 
-  const answer = await pcRef.current?.createAnswer();
-  await pcRef.current?.setLocalDescription(answer!);
-
-  socketRef.current?.emit('video_answer', {
-    roomId,
-    sdp: pcRef.current!.localDescription
-  });
+  console.log("✅ Remote description set");
 });
 
-    socketRef.current.on('video_answer', async ({ sdp }) => {
-      await pcRef.current?.setRemoteDescription(new RTCSessionDescription(sdp));
-    });
+    socketRef.current.on("ice_candidate", async ({ roomId, candidate }) => {
+  console.log("🧊 ICE received");
 
-    socketRef.current.on('ice_candidate', async ({ candidate }) => {
-      try {
-        await pcRef.current?.addIceCandidate(new RTCIceCandidate(candidate));
-      } catch (e) { console.error("Error adding ICE candidate", e); }
-    });
+  try {
+    if (pcRef.current) {
+      await pcRef.current.addIceCandidate(
+        new RTCIceCandidate(candidate)
+      );
+    }
+  } catch (err) {
+    console.error(err);
+  }
+});
 
     socketRef.current.on('receive_message', (data) => {
       setChatLog(prev => [...prev, { text: data.message, sender: data.senderName, isMe: false }]);
@@ -80,33 +105,68 @@ setCurrentRoom(roomId);
       }).catch(err => console.error("Camera Error:", err));
   }, []);
 
-  const setupWebRTC = async (roomId: string, isCaller: boolean) => {
-    if (pcRef.current) pcRef.current.close();
+  const setupWebRTC = async (
+    roomId: string,
+    isCaller: boolean
+) => {
+
+    if (pcRef.current) {
+        pcRef.current.close();
+    }
 
     const pc = new RTCPeerConnection(peerConfiguration);
     pcRef.current = pc;
 
-    // Mobile-critical: Explicitly open transceiver for incoming streams
-    pc.addTransceiver('video', { direction: 'recvonly' });
-    pc.addTransceiver('audio', { direction: 'recvonly' });
+    console.log("Creating PeerConnection. Caller:", isCaller);
 
-    localStreamRef.current?.getTracks().forEach(track => pc.addTrack(track, localStreamRef.current!));
+    localStreamRef.current?.getTracks().forEach(track => {
+        pc.addTrack(track, localStreamRef.current!);
+    });
 
     pc.ontrack = (event) => {
-      console.log("🎥 Remote stream received");
-      if (remoteVideoRef.current) remoteVideoRef.current.srcObject = event.streams[0];
+        console.log("🎥 Remote track received");
+console.log(event.streams);
+console.log(event.track.kind);
+
+        if (remoteVideoRef.current) {
+            remoteVideoRef.current.srcObject = event.streams[0];
+        }
     };
 
     pc.onicecandidate = (event) => {
-      if (event.candidate) socketRef.current?.emit('ice_candidate', { roomId, candidate: event.candidate });
+        if (event.candidate) {
+
+            console.log("Sending ICE");
+
+            socketRef.current?.emit("ice_candidate", {
+                roomId,
+                candidate: event.candidate
+            });
+        }
+    };
+
+    pc.onconnectionstatechange = () => {
+        console.log("Connection:", pc.connectionState);
+    };
+
+    pc.oniceconnectionstatechange = () => {
+        console.log("ICE:", pc.iceConnectionState);
     };
 
     if (isCaller) {
-      const offer = await pc.createOffer();
-      await pc.setLocalDescription(offer);
-      socketRef.current?.emit('video_offer', { roomId, sdp: pc.localDescription });
+
+        console.log("Creating offer");
+
+        const offer = await pc.createOffer();
+
+        await pc.setLocalDescription(offer);
+
+        socketRef.current?.emit("video_offer", {
+            roomId,
+            sdp: pc.localDescription
+        });
     }
-  };
+};
 
   const startSearch = () => {
     if (!socketRef.current || !socketRef.current.connected) {
