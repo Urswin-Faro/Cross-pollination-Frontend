@@ -22,7 +22,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOpe
 
   const handleLogout = () => {
     // This redirects the browser back to the landing page
-    window.location.href = '/landing';
+    window.location.href = '../pages/Landing';
   };
 
   return (
