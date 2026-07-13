@@ -52,7 +52,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOpe
             {!isCollapsed && (
               <div className="min-w-0 duration-200 animate-in fade-in">
                 <h1 className="text-xs font-black leading-none tracking-widest uppercase text-slate-100">
-                  CrossPollination
+                  CrossConnect
                 </h1>
                 <p className="text-[10px] text-slate-500 font-bold mt-1 tracking-wide truncate">
                   Believers Worldwide

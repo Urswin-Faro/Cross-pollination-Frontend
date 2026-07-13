@@ -55,7 +55,7 @@ export const Register: React.FC<RegisterProps> = ({ onNavigate }) => {
   };
 
   return (
-    <AuthLayout title="Join CrossPollination" subtitle="Create your identity card to connect with global believers.">
+    <AuthLayout title="Join CrossConnect" subtitle="Create your identity card to connect with global believers.">
       <form onSubmit={handleSignUp} className="space-y-4">
         
         {/* Render clean alert warning if backend rejects request */}

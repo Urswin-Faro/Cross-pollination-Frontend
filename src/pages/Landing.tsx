@@ -18,7 +18,7 @@ export const Landing: React.FC<LandingProps> = ({ onNavigate }) => {
           <div className="flex items-center justify-center text-base font-black shadow-md w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-600 text-slate-950 shadow-cyan-400/10">
             CP
           </div>
-          <span className="text-sm font-bold tracking-wider text-white">CrossPollination</span>
+          <span className="text-sm font-bold tracking-wider text-white">CrossConnect</span>
         </div>
         <button 
           onClick={() => onNavigate('login')}
@@ -81,7 +81,7 @@ export const Landing: React.FC<LandingProps> = ({ onNavigate }) => {
 
       {/* Sticky Bottom Footer legal note */}
       <footer className="h-14 border-t border-slate-900 flex items-center justify-center px-6 text-[10px] text-slate-600">
-        &copy; 2026 CrossPollination. Built for global discipleship. All rights reserved.
+        &copy; 2026 CrossConnect. Built for global discipleship. All rights reserved.
       </footer>
     </div>
   );
