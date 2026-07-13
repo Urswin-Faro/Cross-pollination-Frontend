@@ -10,14 +10,14 @@ export const SetupProfile: React.FC<SetupProfileProps> = ({ onNavigate }) => {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   
   const availableTags = [
-    'Worship', 
-    'Bible Study', 
-    'Youth Ministry', 
-    'Missions', 
-    'Apologetics', 
-    'Prayer', 
-    'Discipleship', 
-    'Outreach'
+    'Divine Service', 
+    'Youth Fellowship', 
+    'Choir Ministry', 
+    'Sunday School', 
+    'Evangelism', 
+    'Prayer Fellowship', 
+    'Women\'s Fellowship', 
+    'Men\'s Fellowship'
   ];
 
   const toggleTag = (tag: string) => {
@@ -31,13 +31,13 @@ export const SetupProfile: React.FC<SetupProfileProps> = ({ onNavigate }) => {
   const handleCompleteSetup = (e: React.FormEvent) => {
     e.preventDefault();
     if (selectedTags.length === 0) return;
-    onNavigate('app'); // Drops user straight down onto layout feed dashboard
+    onNavigate('app');
   };
 
   return (
     <AuthLayout 
-      title="Setup Your Profile Card" 
-      subtitle="Configure your identity parameters to power the matching algorithm tracker framework."
+      title="Complete Your OAC Profile" 
+      subtitle="Configure your membership details to connect with your local assembly and district."
     >
       <form onSubmit={handleCompleteSetup} className="space-y-5">
         
@@ -52,42 +52,40 @@ export const SetupProfile: React.FC<SetupProfileProps> = ({ onNavigate }) => {
               required
               min="13"
               max="120"
-              placeholder="22"
-              className="w-full bg-[#030712] border border-slate-800 rounded-xl py-2.5 px-3 text-xs text-slate-200 placeholder-slate-800 focus:outline-none focus:border-cyan-400/50 focus:ring-1 focus:ring-cyan-400/20 transition-all duration-200"
+              placeholder="25"
+              className="w-full bg-[#030712] border border-slate-800 rounded-xl py-2.5 px-3 text-xs text-slate-200 placeholder-slate-800 focus:outline-none focus:border-cyan-400/50 transition-all"
             />
           </div>
           <div className="space-y-1.5">
             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-0.5">
               Location
             </label>
-            <div className="relative group">
-              <input 
-                type="text" 
-                required
-                placeholder="Cape Town, ZA"
-                className="w-full bg-[#030712] border border-slate-800 rounded-xl py-2.5 px-3 text-xs text-slate-200 placeholder-slate-800 focus:outline-none focus:border-cyan-400/50 focus:ring-1 focus:ring-cyan-400/20 transition-all duration-200"
-              />
-            </div>
+            <input 
+              type="text" 
+              required
+              placeholder="e.g. Cape Town, ZA"
+              className="w-full bg-[#030712] border border-slate-800 rounded-xl py-2.5 px-3 text-xs text-slate-200 placeholder-slate-800 focus:outline-none focus:border-cyan-400/50 transition-all"
+            />
           </div>
         </div>
 
-        {/* Affiliation Input Field */}
+        {/* Assembly/Overseership Input */}
         <div className="space-y-1.5">
           <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-0.5">
-            Local Church Affiliation
+            Home Assembly / Overseership
           </label>
           <input 
             type="text" 
             required
-            placeholder="e.g. Hillsong, Every Nation"
-            className="w-full bg-[#030712] border border-slate-800 rounded-xl py-2.5 px-3 text-xs text-slate-200 placeholder-slate-800 focus:outline-none focus:border-cyan-400/50 focus:ring-1 focus:ring-cyan-400/20 transition-all duration-200"
+            placeholder="e.g. Mitchell's Plain Assembly"
+            className="w-full bg-[#030712] border border-slate-800 rounded-xl py-2.5 px-3 text-xs text-slate-200 placeholder-slate-800 focus:outline-none focus:border-cyan-400/50 transition-all"
           />
         </div>
 
-        {/* Dynamic Tag Selection Pill Box Array */}
+        {/* Fellowship Focus Tags */}
         <div className="pt-1 space-y-2.5">
           <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block pl-0.5">
-            Select Fellowship Focus Tags <span className="font-black text-cyan-400">*</span>
+            Select Ministry Interests <span className="font-black text-cyan-400">*</span>
           </label>
           <div className="flex flex-wrap gap-2">
             {availableTags.map((tag) => {
@@ -97,29 +95,29 @@ export const SetupProfile: React.FC<SetupProfileProps> = ({ onNavigate }) => {
                   type="button"
                   key={tag}
                   onClick={() => toggleTag(tag)}
-                  className={`text-[10px] font-bold px-3 py-1.5 rounded-xl border transition-all duration-200 flex items-center gap-1.5 cursor-pointer select-none will-change-transform active:scale-95 ${
+                  className={`text-[10px] font-bold px-3 py-1.5 rounded-xl border transition-all duration-200 flex items-center gap-1.5 cursor-pointer ${
                     isSelected
-                      ? 'bg-cyan-400/10 text-cyan-400 border-cyan-400/40 shadow-sm shadow-cyan-400/5'
-                      : 'bg-[#030712] text-slate-400 border-slate-800/80 hover:border-slate-700 hover:text-slate-300'
+                      ? 'bg-cyan-400/10 text-cyan-400 border-cyan-400/40'
+                      : 'bg-[#030712] text-slate-400 border-slate-800 hover:border-slate-700'
                   }`}
                 >
                   <span>{tag}</span>
-                  {isSelected && <Check className="w-3 h-3 stroke-[3.5] animate-in fade-in zoom-in-75 duration-150" />}
+                  {isSelected && <Check className="w-3 h-3 stroke-[3.5]" />}
                 </button>
               );
             })}
           </div>
         </div>
 
-        {/* Action Form Trigger Switch */}
+        {/* Action Trigger */}
         <div className="pt-2">
           <button 
             type="submit"
             disabled={selectedTags.length === 0}
-            className="w-full bg-gradient-to-r from-cyan-400 to-teal-400 disabled:from-slate-800 disabled:to-slate-800 disabled:opacity-30 disabled:text-slate-600 disabled:pointer-events-none text-slate-950 text-xs font-black py-3 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-cyan-400/5 active:scale-[0.99] hover:brightness-[1.03] cursor-pointer"
+            className="flex items-center justify-center w-full gap-2 py-3 text-xs font-black transition-all bg-gradient-to-r from-cyan-400 to-teal-400 disabled:from-slate-800 disabled:to-slate-800 disabled:opacity-30 text-slate-950 rounded-xl"
           >
             <Sparkles className="w-3.5 h-3.5 stroke-[2.5]" /> 
-            <span>Launch My Workspace Feed</span>
+            <span>Complete My Profile</span>
           </button>
         </div>
       </form>
