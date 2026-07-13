@@ -20,11 +20,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOpe
     { id: 'profile', label: 'Profile', icon: User },
   ];
 
-  const handleLogout = () => {
-    // This redirects the browser back to the landing page
-    window.location.href = '../pages/Landing';
-  };
-
+const handleLogout = () => {
+  // This calls the function passed down from App.tsx 
+  // which clears localStorage and sets the screen to 'landing'
+  onLogout();
+};
   return (
     <>
       {/* Mobile Backdrop */}
