@@ -1,17 +1,15 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Home, Compass, Video, Calendar, User, ChevronLeft, ChevronRight, X, LogOut } from 'lucide-react';
+import { Home, Compass, Video, Calendar, User, ChevronLeft, ChevronRight, X } from 'lucide-react';
 
 interface SidebarProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
-  isOpen: boolean;
-  onClose: () => void;
+  isOpen: boolean;       // Controls mobile visibility
+  onClose: () => void;   // Closes the sidebar on mobile
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOpen, onClose }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const navigate = useNavigate();
 
   const navItems = [
     { id: 'home', label: 'Home', icon: Home },
@@ -21,26 +19,32 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOpe
     { id: 'profile', label: 'Profile', icon: User },
   ];
 
-  const handleLogout = () => {
-    navigate('/');
-  };
-
   return (
     <>
-      {isOpen && <div onClick={onClose} className="fixed inset-0 z-30 bg-black/50 md:hidden" />}
+      {/* Mobile Backdrop: Darkens the screen when sidebar is open on mobile */}
+      {isOpen && (
+        <div 
+          onClick={onClose}
+          className="fixed inset-0 z-30 bg-black/50 md:hidden" 
+        />
+      )}
 
       <aside 
         className={`bg-[#0B0F19] border-r border-slate-900 p-4 flex flex-col justify-between fixed h-screen top-0 left-0 z-40 select-none transition-all duration-300 ease-in-out
+          /* Mobile: Off-screen by default, slide in when isOpen is true */
           ${isOpen ? 'translate-x-0 w-64' : '-translate-x-full md:translate-x-0'} 
-          ${isCollapsed ? 'md:w-19' : 'md:w-64'}
+          /* Desktop: Variable width based on isCollapsed */
+          ${isCollapsed ? 'md:w-[76px]' : 'md:w-64'}
         `}
       >
         <div className="space-y-8">
+          {/* Brand System Logo */}
           <div className={`flex items-center space-x-3 px-1 ${isCollapsed ? 'justify-center' : ''}`}>
-            <div className="flex items-center justify-center text-sm font-black shadow-lg w-9 h-9 rounded-xl bg-linear-to-br from-cyan-400 to-blue-600 text-slate-950 shadow-cyan-400/10 shrink-0">
+            <div className="flex items-center justify-center text-sm font-black shadow-lg w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-600 text-slate-950 shadow-cyan-400/10 shrink-0">
               CP
             </div>
             
+            {/* Mobile Close Button (Only visible on mobile) */}
             <button onClick={onClose} className="absolute md:hidden top-5 right-4 text-slate-400">
               <X className="w-5 h-5" />
             </button>
@@ -57,6 +61,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOpe
             )}
           </div>
 
+          {/* Dynamic Route List */}
           <nav className="space-y-1">
             {navItems.map((item) => {
               const Icon = item.icon;
@@ -66,6 +71,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOpe
                   key={item.id}
                   onClick={() => {
                     setActiveTab(item.id);
+                    // On mobile, auto-close sidebar when a tab is selected
                     if (window.innerWidth < 768) onClose();
                   }}
                   title={isCollapsed ? item.label : undefined}
@@ -78,7 +84,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOpe
                   }`}
                 >
                   <Icon 
-                    className={`w-4 h-4 shrink-0 transition-colors duration-200 ${
+                    className={`w-4 h-4 flex-shrink-0 transition-colors duration-200 ${
                       isCollapsed ? '' : 'mr-3.5'
                     } ${
                       isActive ? 'text-cyan-400' : 'text-slate-400 group-hover:text-slate-200'
@@ -95,6 +101,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOpe
           </nav>
         </div>
 
+        {/* Bottom Segment: Scripture Box & Collapse Toggle */}
         <div className="space-y-4">
           {!isCollapsed && (
             <div className="bg-[#111827]/40 border border-slate-900/80 rounded-2xl p-4 shadow-xl backdrop-blur-sm animate-in fade-in slide-in-from-bottom-2 duration-300">
@@ -109,14 +116,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOpe
               </span>
             </div>
           )}
-
-          <button
-            onClick={handleLogout}
-            className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 text-rose-400 hover:bg-rose-500/10 cursor-pointer active:scale-[0.97] ${isCollapsed ? 'px-0' : 'px-4'}`}
-          >
-            <LogOut className="w-4 h-4" />
-            {!isCollapsed && <span>Logout</span>}
-          </button>
 
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
