@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Home, Compass, Video, Calendar, User, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { Home, Compass, Video, Calendar, User, ChevronLeft, ChevronRight, X, LogOut } from 'lucide-react';
 
 interface SidebarProps {
   activeTab: string;
@@ -19,9 +19,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOpe
     { id: 'profile', label: 'Profile', icon: User },
   ];
 
+  const handleLogout = () => {
+    // This redirects the browser back to the landing page
+    window.location.href = '/';
+  };
+
   return (
     <>
-      {/* Mobile Backdrop: Darkens the screen when sidebar is open on mobile */}
+      {/* Mobile Backdrop */}
       {isOpen && (
         <div 
           onClick={onClose}
@@ -31,9 +36,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOpe
 
       <aside 
         className={`bg-[#0B0F19] border-r border-slate-900 p-4 flex flex-col justify-between fixed h-screen top-0 left-0 z-40 select-none transition-all duration-300 ease-in-out
-          /* Mobile: Off-screen by default, slide in when isOpen is true */
           ${isOpen ? 'translate-x-0 w-64' : '-translate-x-full md:translate-x-0'} 
-          /* Desktop: Variable width based on isCollapsed */
           ${isCollapsed ? 'md:w-[76px]' : 'md:w-64'}
         `}
       >
@@ -44,7 +47,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOpe
               CP
             </div>
             
-            {/* Mobile Close Button (Only visible on mobile) */}
             <button onClick={onClose} className="absolute md:hidden top-5 right-4 text-slate-400">
               <X className="w-5 h-5" />
             </button>
@@ -71,7 +73,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOpe
                   key={item.id}
                   onClick={() => {
                     setActiveTab(item.id);
-                    // On mobile, auto-close sidebar when a tab is selected
                     if (window.innerWidth < 768) onClose();
                   }}
                   title={isCollapsed ? item.label : undefined}
@@ -101,7 +102,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOpe
           </nav>
         </div>
 
-        {/* Bottom Segment: Scripture Box & Collapse Toggle */}
+        {/* Bottom Segment */}
         <div className="space-y-4">
           {!isCollapsed && (
             <div className="bg-[#111827]/40 border border-slate-900/80 rounded-2xl p-4 shadow-xl backdrop-blur-sm animate-in fade-in slide-in-from-bottom-2 duration-300">
@@ -116,6 +117,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOpe
               </span>
             </div>
           )}
+
+          {/* Logout Button */}
+          <button
+            onClick={handleLogout}
+            className={`w-full py-2.5 rounded-xl text-xs font-bold transition-all duration-200 text-rose-400 hover:bg-rose-500/10 cursor-pointer active:scale-[0.97] flex items-center ${isCollapsed ? 'justify-center' : 'justify-start px-4 gap-3'}`}
+          >
+            <LogOut className="w-4 h-4" />
+            {!isCollapsed && <span>Logout</span>}
+          </button>
 
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
