@@ -4,8 +4,9 @@ import { Home, Compass, Video, Calendar, User, ChevronLeft, ChevronRight, X, Log
 interface SidebarProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
-  isOpen: boolean;       // Controls mobile visibility
-  onClose: () => void;   // Closes the sidebar on mobile
+  isOpen: boolean;
+  onClose: () => void;
+  onLogout: () => void; // This line must exist here
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOpen, onClose }) => {
