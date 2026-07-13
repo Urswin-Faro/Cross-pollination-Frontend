@@ -6,10 +6,11 @@ interface SidebarProps {
   setActiveTab: (tab: string) => void;
   isOpen: boolean;
   onClose: () => void;
-  onLogout: () => void; // This line must exist here
+  onLogout: () => void; // Defined in interface
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOpen, onClose }) => {
+// 1. ADDED 'onLogout' TO THE DESTRUCTURED PROPS BELOW
+export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOpen, onClose, onLogout }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const navItems = [
@@ -20,11 +21,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOpe
     { id: 'profile', label: 'Profile', icon: User },
   ];
 
-const handleLogout = () => {
-  // This calls the function passed down from App.tsx 
-  // which clears localStorage and sets the screen to 'landing'
-  onLogout();
-};
   return (
     <>
       {/* Mobile Backdrop */}
@@ -119,9 +115,9 @@ const handleLogout = () => {
             </div>
           )}
 
-          {/* Logout Button */}
+          {/* 2. UPDATED LOGOUT BUTTON TO USE THE PROP */}
           <button
-            onClick={handleLogout}
+            onClick={onLogout}
             className={`w-full py-2.5 rounded-xl text-xs font-bold transition-all duration-200 text-rose-400 hover:bg-rose-500/10 cursor-pointer active:scale-[0.97] flex items-center ${isCollapsed ? 'justify-center' : 'justify-start px-4 gap-3'}`}
           >
             <LogOut className="w-4 h-4" />
