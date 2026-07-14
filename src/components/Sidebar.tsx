@@ -39,26 +39,33 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOpe
       >
         <div className="space-y-8">
           {/* Brand System Logo */}
-          <div className={`flex items-center space-x-3 px-1 ${isCollapsed ? 'justify-center' : ''}`}>
-            <div className="flex items-center justify-center text-sm font-black shadow-lg w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-600 text-slate-950 shadow-cyan-400/10 shrink-0">
-              CP
-            </div>
-            
-            <button onClick={onClose} className="absolute md:hidden top-5 right-4 text-slate-400">
-              <X className="w-5 h-5" />
-            </button>
+<div className={`flex items-center space-x-3 px-1 ${isCollapsed ? 'justify-center' : ''}`}>
+  <div className="flex items-center justify-center w-9 h-9 shrink-0">
+    <img
+      src="/logo.png"
+      alt="Cross Connect Logo"
+      className="object-contain w-9 h-9"
+    />
+  </div>
 
-            {!isCollapsed && (
-              <div className="min-w-0 duration-200 animate-in fade-in">
-                <h1 className="text-xs font-black leading-none tracking-widest uppercase text-slate-100">
-                  CrossConnect
-                </h1>
-                <p className="text-[10px] text-slate-500 font-bold mt-1 tracking-wide truncate">
-                  Believers Worldwide
-                </p>
-              </div>
-            )}
-          </div>
+  <button
+    onClick={onClose}
+    className="absolute md:hidden top-5 right-4 text-slate-400"
+  >
+    <X className="w-5 h-5" />
+  </button>
+
+  {!isCollapsed && (
+    <div className="min-w-0 duration-200 animate-in fade-in">
+      <h1 className="text-xs font-black leading-none tracking-widest uppercase text-slate-100">
+        CrossConnect
+      </h1>
+      <p className="text-[10px] text-slate-500 font-bold mt-1 tracking-wide truncate">
+        Believers Worldwide
+      </p>
+    </div>
+  )}
+</div>
 
           {/* Dynamic Route List */}
           <nav className="space-y-1">

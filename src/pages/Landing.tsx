@@ -15,9 +15,13 @@ export const Landing: React.FC<LandingProps> = ({ onNavigate }) => {
       {/* Top Header Branding Row */}
       <header className="relative z-10 flex items-center justify-between w-full h-20 px-6 mx-auto max-w-7xl">
         <div className="flex items-center space-x-3">
-          <div className="flex items-center justify-center text-base font-black shadow-md w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-600 text-slate-950 shadow-cyan-400/10">
-            CP
-          </div>
+          <div className="flex items-center justify-center w-9 h-9 shrink-0">
+  <img
+    src="/logo.png"
+    alt="Cross Connect Logo"
+    className="object-contain w-9 h-9"
+  />
+</div>
           <span className="text-sm font-bold tracking-wider text-white">CrossConnect</span>
         </div>
         <button 
