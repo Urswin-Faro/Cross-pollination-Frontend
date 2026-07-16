@@ -2,24 +2,17 @@ import React from 'react';
 import { FiSearch, FiBell, FiChevronDown } from 'react-icons/fi';
 
 const events = [
-  { id: 1, date: 'Sun, Jul 19', attendees: 320, time: '9:00 AM', location: 'Mitchell\'s Plain Assembly', title: 'Sunday Divine Service', host: 'Cape Town District', image: 'https://images.unsplash.com/photo-1544427920-c49ccfb85512?auto=format&fit=crop&w=600&q=80' },
+  { id: 1, date: 'Sun, Jul 19', attendees: 320, time: '9:00 AM', location: 'Mitchell\'s Plain Assembly', title: 'Sunday Divine Service', host: 'Cape Town District', image: 'https://i.pinimg.com/736x/d7/b4/c3/d7b4c3f78fe9cbc7eb8fd77ccfb67f50.jpg' },
   { id: 2, date: 'Wed, Jul 22', attendees: 85, time: '7:30 PM', location: 'Khayelitsha Central', title: 'Bible Study & Fellowship', host: 'Khayelitsha Assembly', image: 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=600&q=80' },
-  { id: 3, date: 'Sat, Jul 25', attendees: 145, time: '2:00 PM', location: 'Paarl Town Hall', title: 'District Youth Fellowship', host: 'Boland District', image: 'https://images.unsplash.com/photo-1511632765406-a2292305e504?auto=format&fit=crop&w=600&q=80' },
-];
-
-const connections = [
-  { name: 'Thabo Dlamini', age: 25, match: 96, location: 'Johannesburg, Gauteng', hostChurch: 'Soweto Assembly', tags: ['Youth', 'Choir', 'Evangelism'], image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=300&q=80' },
-  { name: 'Elize Botha', age: 29, match: 92, location: 'Bloemfontein, FS', hostChurch: 'Willows Assembly', tags: ['Sunday School', 'Prayer', 'Teaching'], image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=300&q=80' },
-  { name: 'Sipho Nkosi', age: 23, match: 89, location: 'Durban, KZN', hostChurch: 'Durban North Assembly', tags: ['Choir', 'Music', 'Outreach'], image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80' },
-  { name: 'Nomsa Mbeki', age: 27, match: 87, location: 'Gqeberha, EC', hostChurch: 'Walmer Assembly', tags: ['Women\'s Fellowship', 'Prayer'], image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80' },
+  { id: 3, date: 'Sat, Jul 25', attendees: 145, time: '2:00 PM', location: 'Paarl Town Hall', title: 'District Youth Fellowship', host: 'Boland District', image: 'https://i.pinimg.com/1200x/36/13/80/361380dbb1c6a5edd538f16f3ae00288.jpg' },
 ];
 
 const ministries = [
   { name: 'Band', desc: 'Providing instrumental accompaniment for divine services.', members: '45 members', tag: 'Music', image: 'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?auto=format&fit=crop&w=400&q=80' },
   { name: 'Male Voice Choir', desc: 'A dedicated ensemble for tenor, baritone, and bass.', members: '60 members', tag: 'Choir', image: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=400&q=80' },
-  { name: 'Female Voice Choir', desc: 'Harmonizing voices in praise and worship.', members: '65 members', tag: 'Choir', image: 'https://images.unsplash.com/photo-1574753556942-834927421528?auto=format&fit=crop&w=400&q=80' },
+  { name: 'Female Voice Choir', desc: 'Harmonizing voices in praise and worship.', members: '65 members', tag: 'Choir', image: 'https://i.pinimg.com/1200x/7f/19/80/7f19801cbd1b994465d6533653b0cb9b.jpg' },
   { name: 'Community Choir', desc: 'Bringing members together to lift our voices in unity.', members: '120 members', tag: 'Choir', image: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=400&q=80' },
-  { name: 'Bible Study', desc: 'Deepening our understanding of the Holy Scriptures.', members: '200 members', tag: 'Teaching', image: 'https://images.unsplash.com/photo-1509023464722-18d996398ca8?auto=format&fit=crop&w=400&q=80' },
+  { name: 'Bible Study', desc: 'Deepening our understanding of the Holy Scriptures.', members: '200 members', tag: 'Teaching', image: 'https://i.pinimg.com/1200x/f1/f0/17/f1f01753f5f8d65795b8ebf54e323d93.jpg' },
   { name: 'Drama Club', desc: 'Expressing faith through theatrical performance.', members: '30 members', tag: 'Creative', image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=400&q=80' },
 ];
 
@@ -56,7 +49,9 @@ export default function Homepage() {
                 <span className="absolute top-3 left-3 bg-slate-950/80 backdrop-blur-md text-[9px] font-bold tracking-wide px-2.5 py-1 rounded-md border border-slate-800">{event.date.toUpperCase()}</span>
               </div>
               <div className="p-5">
-                <h4 className="mb-4 text-sm font-bold text-slate-200">{event.title}</h4>
+                <h4 className="mb-1 text-sm font-bold text-slate-200">{event.title}</h4>
+                {/* Location added here */}
+                <p className="mb-4 text-[11px] text-cyan-400 font-medium uppercase tracking-wide">{event.location}</p>
                 <button className="w-full py-2 text-xs font-bold transition border bg-slate-900 border-slate-800 rounded-xl hover:border-cyan-400/50">RSVP</button>
               </div>
             </div>

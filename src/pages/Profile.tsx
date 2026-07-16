@@ -10,8 +10,8 @@ interface TestimonyItem {
 export default function Profile() {
   const [isEditing, setIsEditing] = useState(false);
   // Personalized Bio for an OAC member
-  const [bio, setBio] = useState('Dedicated member of the All Apostolic Church. Passionate about participating in district choirs, contributing to Bible study fellowships, and supporting our mission of service and faith.');
-  const [church, setChurch] = useState('All Apostolic Church (OAC)');
+  const [bio, setBio] = useState('Dedicated member of the Old Apostolic Church. Passionate about participating in district choirs, contributing to Bible study fellowships, and supporting our mission of service and faith.');
+  const [church, setChurch] = useState('Old Apostolic Church (OAC)');
   const [role, setRole] = useState('Congregation Member / Choir Ministry');
   
   const [gifts, setGifts] = useState(['Intercession', 'Choir Service', 'Teaching', 'Youth Fellowship']);
