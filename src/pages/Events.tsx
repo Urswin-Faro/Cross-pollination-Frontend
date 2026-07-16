@@ -37,7 +37,7 @@ const initialEvents: EventItem[] = [
     overseership: 'Overseership Peters',
     type: 'In-Person',
     attendees: 320,
-    image: 'https://images.unsplash.com/photo-1548695886-559d288d4474?auto=format&fit=crop&w=600&q=80'
+    image: 'https://i.pinimg.com/736x/d7/b4/c3/d7b4c3f78fe9cbc7eb8fd77ccfb67f50.jpg'
   },
   {
     id: 'evt-2',
@@ -50,7 +50,7 @@ const initialEvents: EventItem[] = [
     overseership: 'Overseership Norman',
     type: 'In-Person',
     attendees: 85,
-    image: 'https://images.unsplash.com/photo-1511632765406-a2292305e504?auto=format&fit=crop&w=600&q=80'
+    image: 'https://i.pinimg.com/1200x/36/13/80/361380dbb1c6a5edd538f16f3ae00288.jpg'
   },
   {
     id: 'evt-3',
@@ -63,7 +63,7 @@ const initialEvents: EventItem[] = [
     overseership: 'Overseership Wilcox',
     type: 'In-Person',
     attendees: 45,
-    image: 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=600&q=80'
+    image: 'https://i.pinimg.com/1200x/35/fd/da/35fdda39acb667e97ccf514832786b1f.jpg'
   },
   {
     id: 'evt-4',
