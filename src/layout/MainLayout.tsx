@@ -24,7 +24,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children, activeTab, set
           <Menu className="w-6 h-6" />
         </button>
         <span className="ml-3 text-xs font-bold tracking-widest uppercase text-slate-200">
-          CrossPollination
+          CrossConnect
         </span>
       </div>
 
